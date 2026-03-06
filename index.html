@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FDA Label Checker — Rebrand It Right!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+  :root {
+    --ketchup: #e53935;
+    --ketchup-light: #ffebee;
+    --mustard: #f9a825;
+    --mustard-light: #fff8e1;
+    --pickle: #43a047;
+    --pickle-light: #e8f5e9;
+    --blueberry: #5c6bc0;
+    --blueberry-light: #e8eaf6;
+    --cream: #fffdf7;
+    --toast: #5d4037;
+    --toast-light: #efebe9;
+    --gray: #78909c;
+    --gray-light: #f5f5f5;
+    --white: #ffffff;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(249,168,37,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(229,57,53,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(67,160,71,0.04) 0%, transparent 60%);
+    min-height: 100vh;
+    color: #333;
+  }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, var(--ketchup) 0%, var(--mustard) 50%, var(--pickle) 100%);
+    color: white;
+    padding: 0;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.03) 20px,
+      rgba(255,255,255,0.03) 40px
+    );
+  }
+  .header-inner {
+    position: relative;
+    z-index: 1;
+    padding: 32px 20px 28px;
+  }
+  .header-food-strip {
+    font-size: 1.8rem;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    line-height: 1;
+  }
+  header h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  header p {
+    font-size: 1.05rem;
+    opacity: 0.95;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  /* Tab Nav */
+  .tab-nav {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 16px 0;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .tab-btn {
+    padding: 14px 32px;
+    border: none;
+    border-radius: var(--radius) var(--radius) 0 0;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    cursor: pointer;
+    background: var(--white);
+    color: var(--gray);
+    transition: all 0.25s;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    position: relative;
+  }
+  .tab-btn.active {
+    background: var(--white);
+    color: var(--pickle);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    z-index: 2;
+  }
+  .tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--pickle);
+    border-radius: 2px 2px 0 0;
+  }
+  .tab-btn:not(.active):hover { background: #f8f8f8; color: var(--toast); }
+
+  /* Main Content */
+  .main-container {
+    max-width: 920px;
+    margin: 0 auto 50px;
+    background: var(--white);
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px;
+    position: relative;
+    z-index: 1;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---------- CHECKER MODE ---------- */
+  .checker-intro {
+    background: linear-gradient(135deg, var(--mustard-light) 0%, #fff3e0 100%);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    font-size: 0.97rem;
+    line-height: 1.6;
+    border: 2px solid rgba(249,168,37,0.15);
+    position: relative;
+  }
+  .checker-intro::before {
+    content: '🍔';
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    font-size: 1.6rem;
+    background: var(--white);
+    padding: 2px 6px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .checker-intro strong { color: var(--toast); }
+
+  .section-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 32px 0 14px;
+    color: var(--toast);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .num {
+    background: linear-gradient(135deg, var(--ketchup), var(--mustard));
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(229,57,53,0.25);
+  }
+
+  label.field-label {
+    display: block;
+    font-weight: 600;
+    margin: 16px 0 5px;
+    font-size: 0.95rem;
+    color: var(--toast);
+  }
+  .field-hint {
+    font-size: 0.82rem;
+    color: var(--gray);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  input[type="text"], textarea, select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    background: #fafafa;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--blueberry);
+    box-shadow: 0 0 0 3px rgba(92,107,192,0.12);
+    background: var(--white);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .claims-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) { .claims-grid { grid-template-columns: 1fr; } }
+
+  .claim-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.25s;
+    font-size: 0.9rem;
+    user-select: none;
+    background: #fafafa;
+  }
+  .claim-chip:hover { border-color: var(--blueberry); background: var(--blueberry-light); transform: translateY(-1px); }
+  .claim-chip.selected { border-color: var(--pickle); background: var(--pickle-light); box-shadow: 0 2px 8px rgba(67,160,71,0.15); }
+  .claim-chip input { display: none; }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--ketchup) 0%, #d32f2f 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(229,57,53,0.3);
+    letter-spacing: 0.3px;
+  }
+  .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(229,57,53,0.35); }
+  .btn-primary:active { transform: translateY(0) scale(0.98); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--blueberry);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: #3f51b5; }
+
+  /* Results */
+  #checker-results {
+    margin-top: 32px;
+  }
+  .result-card {
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    transition: transform 0.15s;
+    border-left: 6px solid;
+  }
+  .result-card:hover { transform: translateX(2px); }
+  .result-card.pass { background: var(--pickle-light); border-left-color: var(--pickle); }
+  .result-card.warn { background: var(--mustard-light); border-left-color: var(--mustard); }
+  .result-card.fail { background: var(--ketchup-light); border-left-color: var(--ketchup); }
+  .result-card.info { background: var(--blueberry-light); border-left-color: var(--blueberry); }
+  .result-card h3 { font-family: 'Fredoka', sans-serif; font-size: 1.02rem; margin-bottom: 6px; font-weight: 600; }
+  .result-card.pass h3 { color: var(--pickle); }
+  .result-card.warn h3 { color: #e65100; }
+  .result-card.fail h3 { color: var(--ketchup); }
+  .result-card.info h3 { color: var(--blueberry); }
+  .result-card p, .result-card ul { font-size: 0.92rem; }
+  .result-card ul { margin-left: 18px; margin-top: 4px; }
+  .result-card li { margin-bottom: 3px; }
+  .guide-ref {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    font-size: 0.84rem;
+    color: #555;
+    line-height: 1.5;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  .guide-ref strong { color: var(--blueberry); }
+
+  .score-banner {
+    text-align: center;
+    padding: 26px;
+    border-radius: var(--radius);
+    margin-bottom: 22px;
+    font-size: 1.1rem;
+    border: 2px solid;
+  }
+  .score-banner.great { background: var(--pickle-light); color: var(--pickle); border-color: rgba(67,160,71,0.2); }
+  .score-banner.okay { background: var(--mustard-light); color: #e65100; border-color: rgba(249,168,37,0.3); }
+  .score-banner.needs-work { background: var(--ketchup-light); color: var(--ketchup); border-color: rgba(229,57,53,0.2); }
+  .score-banner .score-num { font-family: 'Fredoka', sans-serif; font-size: 2.6rem; font-weight: 700; display: block; }
+
+  /* Utility */
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+
+  /* custom checkbox look */
+  .check-icon { font-size: 1.2rem; }
+
+  /* Reference drawer */
+  .ref-toggle {
+    background: none;
+    border: 2px solid var(--blueberry);
+    color: var(--blueberry);
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+  }
+  .ref-toggle:hover { background: var(--blueberry-light); }
+  .ref-drawer {
+    display: none;
+    margin-top: 16px;
+    padding: 24px;
+    background: var(--cream);
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .ref-drawer.open { display: block; }
+  .ref-drawer h4 {
+    font-family: 'Fredoka', sans-serif;
+    color: var(--toast);
+    margin: 18px 0 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ref-drawer h4:first-child { margin-top: 0; }
+  .ref-drawer table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; border-radius: 8px; overflow: hidden; }
+  .ref-drawer th, .ref-drawer td {
+    border: 1px solid #e0e0e0;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.84rem;
+  }
+  .ref-drawer th { background: linear-gradient(135deg, var(--toast-light), #d7ccc8); font-weight: 700; color: var(--toast); }
+  .ref-drawer td { background: var(--white); }
+  .ref-drawer tr:hover td { background: #fafafa; }
+
+  /* Nutrition grid */
+  .nut-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+  .nut-grid .nut-item {
+    position: relative;
+  }
+  @media (max-width: 600px) { .nut-grid { grid-template-columns: 1fr; } }
+
+  /* Footer */
+  .app-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+    color: var(--gray);
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .app-footer a { color: var(--blueberry); text-decoration: none; }
+
+  /* Animations */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .result-card { animation: slideIn 0.3s ease-out; }
+  .score-banner { animation: slideIn 0.4s ease-out; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-food-strip">🍔 🍕 🌮 🍩 🥤 🍫 🍟 🧁 🥯 🍿</div>
+  <div class="header-inner">
+    <h1>🏷️ FDA Label Checker</h1>
+    <p>Rebrand It Right — Learn the rules before you break the marketing mold!</p>
+    <div class="header-badge">🎓 High School FDA Labeling Activity</div>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('checker')">✅ Label Checker</button>
+  <button class="tab-btn" onclick="switchTab('reference')">📖 Quick Reference</button>
+</nav>
+
+<div class="main-container">
+
+<!-- ==================== CHECKER TAB ==================== -->
+<div id="tab-checker" class="tab-panel active">
+  <div class="checker-intro">
+    <strong>How this works:</strong> You're rebranding an unhealthy food to look and sound healthy. Enter your proposed product details below and we'll check them against real FDA labeling rules. You'll get instant feedback on what's allowed, what's risky, and what could get your product pulled from shelves!
+  </div>
+
+  <div class="checker-intro" style="background: linear-gradient(135deg, var(--blueberry-light) 0%, #e3e8fd 100%); border-color: rgba(92,107,192,0.15);">
+    <strong>📋 Required Label Elements — Don't Forget These!</strong><br>
+    Every food label <em>must</em> include: <strong>Statement of Identity</strong> (common name of the food), <strong>Net Quantity</strong> (weight/volume in metric &amp; U.S. units), <strong>Nutrition Facts Panel</strong>, <strong>Ingredient List</strong> (in descending order by weight), <strong>Allergen Declaration</strong> (milk, eggs, fish, shellfish, tree nuts, peanuts, wheat, soybeans, sesame), and <strong>Manufacturer/Distributor Info</strong>. Your rebrand should include mock versions of all of these!
+  </div>
+
+  <!-- Product Identity -->
+  <div class="section-title"><span class="num">1</span> Product Identity</div>
+
+  <label class="field-label">What's your new product name?</label>
+  <div class="field-hint">The FDA calls this the "Statement of Identity." It has to honestly describe what the food actually is.</div>
+  <input type="text" id="productName" placeholder='e.g. "VitaCrunch Oat Bars"'>
+
+  <label class="field-label">What is the food actually? (Common name)</label>
+  <div class="field-hint">This must appear on the label — e.g., "chocolate-coated granola bar" or "carbonated soft drink"</div>
+  <input type="text" id="commonName" placeholder='e.g. "Chocolate-coated granola bar"'>
+
+  <!-- Marketing Claims -->
+  <div class="section-title"><span class="num">2</span> Marketing Claims on Your Package</div>
+  <p class="field-hint">Select any claims you want to put on your label. We'll tell you if the product can legally use them.</p>
+
+  <div class="claims-grid" id="claimsGrid">
+    <!-- Nutrient Content Claims -->
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="fat-free"><span class="check-icon">☐</span> Fat Free</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="low-fat"><span class="check-icon">☐</span> Low Fat</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="reduced-fat"><span class="check-icon">☐</span> Reduced Fat</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="sugar-free"><span class="check-icon">☐</span> Sugar Free</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="no-added-sugar"><span class="check-icon">☐</span> No Added Sugars</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="low-calorie"><span class="check-icon">☐</span> Low Calorie</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="light"><span class="check-icon">☐</span> Light / Lite</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="low-sodium"><span class="check-icon">☐</span> Low Sodium</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="good-source-fiber"><span class="check-icon">☐</span> Good Source of Fiber</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="high-protein"><span class="check-icon">☐</span> High in Protein</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="healthy"><span class="check-icon">☐</span> Healthy</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="natural"><span class="check-icon">☐</span> Natural / All Natural</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="organic"><span class="check-icon">☐</span> Organic</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="heart-healthy"><span class="check-icon">☐</span> Heart Healthy</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="immune-support"><span class="check-icon">☐</span> Supports Immune Health</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="zero-trans-fat"><span class="check-icon">☐</span> 0g Trans Fat</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="whole-grain"><span class="check-icon">☐</span> Made with Whole Grains</label>
+    <label class="claim-chip" onclick="toggleChip(this)"><input type="checkbox" value="gluten-free"><span class="check-icon">☐</span> Gluten Free</label>
+  </div>
+
+  <label class="field-label mt-16">Any custom front-of-package text?</label>
+  <div class="field-hint">Write any extra marketing copy you want on the front of the package.</div>
+  <textarea id="customCopy" placeholder='e.g. "Packed with real fruit flavor and only the good stuff! Fuel your day the smart way."'></textarea>
+
+  <!-- Nutrition Info -->
+  <div class="section-title"><span class="num">3</span> Actual Nutrition Facts (per serving)</div>
+  <p class="field-hint">Enter the REAL nutritional info for the original unhealthy product. This is what the FDA checks claims against.</p>
+
+  <div class="nut-grid">
+    <div>
+      <label class="field-label">Calories</label>
+      <input type="text" id="nut-calories" placeholder="e.g. 250">
+    </div>
+    <div>
+      <label class="field-label">Total Fat (g)</label>
+      <input type="text" id="nut-fat" placeholder="e.g. 12">
+    </div>
+    <div>
+      <label class="field-label">Saturated Fat (g)</label>
+      <input type="text" id="nut-satfat" placeholder="e.g. 4">
+    </div>
+    <div>
+      <label class="field-label">Trans Fat (g)</label>
+      <input type="text" id="nut-transfat" placeholder="e.g. 0.5">
+    </div>
+    <div>
+      <label class="field-label">Sodium (mg)</label>
+      <input type="text" id="nut-sodium" placeholder="e.g. 320">
+    </div>
+    <div>
+      <label class="field-label">Total Sugars (g)</label>
+      <input type="text" id="nut-sugar" placeholder="e.g. 18">
+    </div>
+    <div>
+      <label class="field-label">Added Sugars (g)</label>
+      <input type="text" id="nut-addedsugar" placeholder="e.g. 15">
+    </div>
+    <div>
+      <label class="field-label">Fiber (g)</label>
+      <input type="text" id="nut-fiber" placeholder="e.g. 1">
+    </div>
+    <div>
+      <label class="field-label">Protein (g)</label>
+      <input type="text" id="nut-protein" placeholder="e.g. 3">
+    </div>
+    <div>
+      <label class="field-label">Cholesterol (mg)</label>
+      <input type="text" id="nut-chol" placeholder="e.g. 15">
+    </div>
+    <div>
+      <label class="field-label">Serving Size (g)</label>
+      <input type="text" id="nut-serving" placeholder="e.g. 40">
+    </div>
+  </div>
+
+  <div class="text-center">
+    <button class="btn-primary" onclick="runChecker()">🔍 Check My Label</button>
+  </div>
+
+  <div id="checker-results"></div>
+</div>
+
+<!-- ==================== REFERENCE TAB ==================== -->
+<div id="tab-reference" class="tab-panel">
+  <div class="checker-intro">
+    <strong>Quick Reference Guide</strong> — A cheat sheet of the most important FDA labeling rules for your rebranding project.
+  </div>
+
+  <div class="ref-drawer open">
+    <h4>🔢 Nutrient Content Claim Thresholds (per serving)</h4>
+    <table>
+      <tr><th>Claim</th><th>What the Product Must Actually Have</th></tr>
+      <tr><td><strong>Fat Free</strong></td><td>Less than 0.5g fat</td></tr>
+      <tr><td><strong>Low Fat</strong></td><td>3g or less fat</td></tr>
+      <tr><td><strong>Reduced Fat</strong></td><td>At least 25% less fat than the regular version</td></tr>
+      <tr><td><strong>Calorie Free</strong></td><td>Less than 5 calories</td></tr>
+      <tr><td><strong>Low Calorie</strong></td><td>40 calories or less</td></tr>
+      <tr><td><strong>Sugar Free</strong></td><td>Less than 0.5g sugars</td></tr>
+      <tr><td><strong>No Added Sugars</strong></td><td>No sugars or sugar-containing ingredients added during processing</td></tr>
+      <tr><td><strong>Sodium Free</strong></td><td>Less than 5mg sodium</td></tr>
+      <tr><td><strong>Low Sodium</strong></td><td>140mg or less sodium</td></tr>
+      <tr><td><strong>Cholesterol Free</strong></td><td>Less than 2mg cholesterol AND 2g or less saturated fat</td></tr>
+      <tr><td><strong>Light / Lite</strong></td><td>1/3 fewer calories OR 50% less fat than regular version</td></tr>
+      <tr><td><strong>Good Source of [nutrient]</strong></td><td>10–19% of the Daily Value</td></tr>
+      <tr><td><strong>High / Rich in / Excellent Source</strong></td><td>20% or more of the Daily Value</td></tr>
+    </table>
+
+    <h4>⚠️ Special Terms</h4>
+    <table>
+      <tr><th>Term</th><th>What You Need to Know</th></tr>
+      <tr><td><strong>"Healthy" (OLD definition)</strong></td><td>Until Feb 25, 2028: Must meet limits for fat (≤3g), saturated fat (≤1g), sodium (≤480mg), and cholesterol (≤60mg) AND contain at least 10% DV of vitamin A, vitamin C, iron, calcium, protein, or fiber</td></tr>
+      <tr><td><strong>"Healthy" (NEW 2024 definition)</strong></td><td>Effective Feb 25, 2028: Food must contain a meaningful amount from at least one food group (fruit, vegetables, grains, dairy, protein) per Dietary Guidelines AND meet limits for Added Sugars (≤2.5g), Saturated Fat (≤1g), and Sodium (≤230mg) per RACC</td></tr>
+      <tr><td><strong>"Fresh"</strong></td><td>Means raw or minimally processed, no thermal processing (except approved waxes, pesticides, mild wash, or irradiation ≤1 kGy per 21 CFR 101.95). Cannot be used for cooked, baked, pasteurized, or processed products.</td></tr>
+      <tr><td><strong>"Fresh Frozen"</strong></td><td>Means frozen while still fresh (not thawed and refrozen). Specific claim under 21 CFR 101.95(b). You must document that freezing occurred while fresh.</td></tr>
+      <tr><td><strong>"Good Source" / "Contains" / "Provides"</strong></td><td>Requires 10–19% of the Daily Value per RACC (21 CFR 101.54(e))</td></tr>
+      <tr><td><strong>"High" / "Rich In" / "Excellent Source"</strong></td><td>Requires ≥20% of the Daily Value per RACC (21 CFR 101.54(b))</td></tr>
+      <tr><td><strong>"More" / "Fortified" / "Enriched" / "Added" / "Extra" / "Plus"</strong></td><td>Relative claims requiring ≥10% more DV than reference food per RACC (21 CFR 101.54(e)). You MUST name the reference food on the label.</td></tr>
+      <tr><td><strong>"Reduced" / "Less" / "Fewer" / "Lower"</strong></td><td>Comparative claims requiring ≥25% less than reference food (21 CFR 101.54(e)). You MUST name the reference food AND state % or fraction of change AND declare nutrient amounts in both foods.</td></tr>
+      <tr><td><strong>"No Added Sugars"</strong></td><td>No sugar or sugar-containing ingredient (honey, syrups, juice concentrates) added during processing (21 CFR 101.60(c)). If not naturally low/reduced in calories, you must disclose "This is Not a Low Calorie Food."</td></tr>
+      <tr><td><strong>"Lean" (meat/seafood only)</strong></td><td>&lt;10g fat, &lt;4.5g saturated fat, &lt;95mg cholesterol per RACC (21 CFR 101.62(e))</td></tr>
+      <tr><td><strong>"Extra Lean" (meat/seafood only)</strong></td><td>&lt;5g fat, &lt;2g saturated fat, &lt;95mg cholesterol per RACC (21 CFR 101.62(e))</td></tr>
+      <tr><td><strong>"Very Low Sodium"</strong></td><td>Requires ≤35mg sodium per RACC</td></tr>
+      <tr><td><strong>"Salt Free" / "No Salt" / "Sodium Free"</strong></td><td>&lt;5mg sodium per RACC. If claiming "no salt added" but product is not sodium free, must state "This Is Not a Sodium Free Food."</td></tr>
+      <tr><td><strong>"Lightly Salted"</strong></td><td>Requires 50% less sodium than reference food. You must name the reference product.</td></tr>
+      <tr><td><strong>"Antioxidant"</strong></td><td>Must identify specific nutrient (e.g., "antioxidant vitamin C"). Nutrient must meet "high" or "good source" definition AND have scientific evidence of antioxidant activity.</td></tr>
+      <tr><td><strong>"High Potency"</strong></td><td>Each vitamin or mineral must provide ≥100% RDI per RACC (21 CFR 101.36(c)). You must identify which nutrients qualify.</td></tr>
+      <tr><td><strong>"Natural"</strong></td><td>FDA has no formal definition! Generally means no artificial ingredients or added colors, and minimally processed. Be careful — this term is loosely regulated.</td></tr>
+      <tr><td><strong>"Organic"</strong></td><td>Regulated by the USDA, not the FDA. Must be certified. "100% Organic" = all organic ingredients. "Organic" = 95%+. "Made with Organic" = 70%+.</td></tr>
+      <tr><td><strong>"Gluten Free"</strong></td><td>Must contain less than 20 parts per million (ppm) of gluten</td></tr>
+    </table>
+
+    <h4>📋 Relative/Comparative Claims (Light, Reduced, Less, More, Added, Fortified, Enriched)</h4>
+    <table>
+      <tr><th>What's Required</th><th>Details</th></tr>
+      <tr><td>Identify Reference Food</td><td>You MUST name the reference product (e.g., "Reduced Fat — 50% less fat than our regular cheddar")</td></tr>
+      <tr><td>State % or Fraction of Change</td><td>Tell consumers how much less or more (e.g., "25% less," "50% reduction," "1/3 fewer")</td></tr>
+      <tr><td>Declare Nutrient Amounts in Both Foods</td><td>Show actual nutrient amounts in BOTH the product and reference food so consumers can verify the comparison</td></tr>
+      <tr><td>Minimum Threshold</td><td>"Reduced" = ≥25% less; "More/Added/Fortified" = ≥10% more. Reference: 21 CFR 101.54(e), FDA Guide Section 8, Appendix B (p. 91–94)</td></tr>
+    </table>
+
+    <h4>⚠️ Disclosure Statements Required When Making Nutrient Content Claims</h4>
+    <table>
+      <tr><th>When Required</th><th>Example Disclosure Statement</th></tr>
+      <tr><td>Product is "Low Fat" but has Total Fat >13g, OR Saturated Fat >4g, OR Cholesterol >60mg, OR Sodium >480mg per RACC</td><td>"See nutrition information for sodium content" — Must be placed immediately adjacent to the nutrient content claim (21 CFR 101.13(h))</td></tr>
+    </table>
+
+    <h4>🏥 Types of Health-Related Claims</h4>
+    <table>
+      <tr><th>Type</th><th>What It Is</th><th>Example</th></tr>
+      <tr><td><strong>Health Claim</strong></td><td>Links a food/nutrient to reducing risk of a disease. Must be FDA-authorized and backed by strong science.</td><td>"Diets low in sodium may reduce the risk of high blood pressure."</td></tr>
+      <tr><td><strong>Qualified Health Claim</strong></td><td>Similar to above but with weaker science. Must include qualifying language.</td><td>"Some evidence suggests... however, FDA has determined this evidence is limited."</td></tr>
+      <tr><td><strong>Structure/Function Claim</strong></td><td>Describes how a nutrient affects the body. Does NOT need FDA approval but CANNOT mention a disease.</td><td>"Calcium builds strong bones." ✅<br>"Calcium prevents osteoporosis." ❌</td></tr>
+    </table>
+
+    <h4>📋 Required Label Elements (Don't Forget These!)</h4>
+    <table>
+      <tr><th>Element</th><th>Details</th></tr>
+      <tr><td>Statement of Identity</td><td>The common name of the food (e.g., "corn chips," "chocolate ice cream")</td></tr>
+      <tr><td>Net Quantity</td><td>How much product is in the package, in both metric and U.S. units</td></tr>
+      <tr><td>Nutrition Facts Panel</td><td>Standardized format showing calories, fat, sodium, carbs, protein, etc.</td></tr>
+      <tr><td>Ingredient List</td><td>All ingredients in descending order by weight. Must declare major allergens.</td></tr>
+      <tr><td>Allergen Declaration</td><td>Must clearly identify: milk, eggs, fish, shellfish, tree nuts, peanuts, wheat, soybeans, sesame (9 major allergens per FASTER Act 2023 — effective Jan 1, 2023)</td></tr>
+      <tr><td>Name & Address</td><td>Manufacturer, packer, or distributor's business info</td></tr>
+    </table>
+
+    <h4>🍷 Juice Naming & Labeling</h4>
+    <table>
+      <tr><th>Requirement</th><th>Details</th></tr>
+      <tr><td>Product Name</td><td>If NOT 100% juice, must use qualifier like "juice drink," "juice beverage," or "juice cocktail" in the name — simply "juice" implies 100% juice (21 CFR 101.30, 21 CFR 102.33, FDA Guide Section 4: J1-J5, p. 8–9)</td></tr>
+      <tr><td>Juice Content Declaration</td><td>Must clearly state % juice on the information panel (e.g., "Contains 25% Juice" or "10% Real Juice")</td></tr>
+    </table>
+
+    <h4>🚫 Common Mistakes to Avoid</h4>
+    <table>
+      <tr><th>Mistake</th><th>Why It's Wrong</th></tr>
+      <tr><td>Calling something "low fat" when it has 5g fat</td><td>"Low fat" requires 3g or less per serving</td></tr>
+      <tr><td>Saying "sugar free" for a product with 2g sugar</td><td>"Sugar free" means less than 0.5g sugar per serving</td></tr>
+      <tr><td>Using "prevents heart disease" on the package</td><td>You can't claim a food prevents/treats a disease — that makes it a drug claim</td></tr>
+      <tr><td>Calling it "organic" without USDA certification</td><td>The term "organic" is legally regulated by the USDA</td></tr>
+      <tr><td>Saying "all natural" on a product with artificial dyes</td><td>"Natural" generally means no artificial ingredients</td></tr>
+      <tr><td>Putting "0 Trans Fat" when it has 0.4g</td><td>FDA allows rounding to 0g if under 0.5g — this is technically legal but misleading</td></tr>
+      <tr><td>Saying "fresh" about a pasteurized/cooked product</td><td>"Fresh" means raw or minimally processed with no thermal processing (21 CFR 101.95) — most manufactured foods cannot use this term</td></tr>
+      <tr><td>Using "reduced fat" without naming the reference food</td><td>Relative claims MUST include the reference food name and % of change on the label (21 CFR 101.54(e))</td></tr>
+      <tr><td>Claiming a juice product contains "juice" when it's 5% juice</td><td>If not 100% juice, must use "juice drink," "juice beverage," etc. AND declare % juice on information panel</td></tr>
+      <tr><td>Not including required disclosure when making nutrient claims</td><td>If product exceeds thresholds while claiming "low fat," etc., must include disclosure like "See nutrition information for sodium content" (21 CFR 101.13(h))</td></tr>
+    </table>
+  </div>
+</div>
+
+</div><!-- end main-container -->
+
+<footer class="app-footer">
+  🍔🍕🌮 Built for learning — not legal advice! Always check <a href="https://www.fda.gov/food/food-labeling-nutrition" target="_blank">FDA.gov</a> for official rules. 🌮🍕🍔
+</footer>
+
+<script>
+// ==================== TAB SWITCHING ====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const btns = document.querySelectorAll('.tab-btn');
+  const map = { checker: 0, reference: 1 };
+  btns[map[tab]].classList.add('active');
+}
+
+// ==================== CLAIM CHIP TOGGLE ====================
+function toggleChip(el) {
+  const cb = el.querySelector('input');
+  cb.checked = !cb.checked;
+  el.classList.toggle('selected', cb.checked);
+  el.querySelector('.check-icon').textContent = cb.checked ? '☑' : '☐';
+}
+
+// ==================== CHECKER LOGIC ====================
+function getNum(id) {
+  const v = parseFloat(document.getElementById(id).value);
+  return isNaN(v) ? null : v;
+}
+
+function getSelectedClaims() {
+  const checks = document.querySelectorAll('#claimsGrid input[type=checkbox]:checked');
+  return Array.from(checks).map(c => c.value);
+}
+
+function runChecker() {
+  const results = [];
+  const productName = document.getElementById('productName').value.trim();
+  const commonName = document.getElementById('commonName').value.trim();
+  const customCopy = document.getElementById('customCopy').value.trim();
+  const claims = getSelectedClaims();
+
+  const cal = getNum('nut-calories');
+  const fat = getNum('nut-fat');
+  const satfat = getNum('nut-satfat');
+  const transfat = getNum('nut-transfat');
+  const sodium = getNum('nut-sodium');
+  const sugar = getNum('nut-sugar');
+  const addedsugar = getNum('nut-addedsugar');
+  const fiber = getNum('nut-fiber');
+  const protein = getNum('nut-protein');
+  const chol = getNum('nut-chol');
+  const serving = getNum('nut-serving');
+
+  let passCount = 0;
+  let warnCount = 0;
+  let failCount = 0;
+
+  function add(type, title, body, guideRef) {
+    results.push({ type, title, body, guideRef: guideRef || null });
+    if (type === 'pass') passCount++;
+    if (type === 'warn') warnCount++;
+    if (type === 'fail') failCount++;
+  }
+
+  // --- PRODUCT NAME CHECKS ---
+  if (!productName) {
+    add('warn', 'Missing Product Name', 'You need a name for your product! The FDA requires a "Statement of Identity" on every food label.', 'FDA Guide Section 4: Name of Food (p. 7–13) — Covers rules for product naming, statement of identity, and when you can use fanciful names vs. common names.');
+  } else {
+    // Check for disease / drug claims in name
+    const diseaseWords = /\b(cure|heal|treat|prevent|disease|cancer|diabetes|heart attack|stroke|medicine|prescription|drug|therapy)\b/i;
+    let nameIssues = 0;
+    if (diseaseWords.test(productName)) {
+      add('fail', 'Product Name — Disease/Drug Language', `Your product name "${productName}" contains language that could make it sound like a drug. The FDA says a food label cannot claim to treat, cure, or prevent a disease. That crosses the line from food into drug territory.`, 'FDA Guide Section 8: Claims (p. 72–86) — Explains the line between food claims and drug claims. Also see Section 4: Name of Food (p. 7).');
+      nameIssues++;
+    }
+
+    // Check for regulated terms embedded in the product name
+    const nameRegTerms = [
+      { pattern: /\b(organic|certified organic|usda organic)\b/i, term: 'Organic', msg: `Your product name "${productName}" includes the word "organic." This is a legally regulated term — you can only use it if the product is USDA-certified organic. For a rebranded product, this almost certainly isn't the case. Remove "organic" from the name.`, ref: '"Organic" is regulated by the USDA under the National Organic Program, not the FDA. You cannot use this term without certification. This is not covered in the FDA Food Labeling Guide — see usda.gov/organic instead.' },
+      { pattern: /\b(fat[\s-]?free|zero fat)\b/i, term: 'Fat Free', msg: `Your product name "${productName}" contains "fat free," which is an FDA-regulated nutrient content claim. The product must have less than 0.5g of fat per serving to use this term — even in the name.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90). Also see Section 4: Name of Food (p. 7–13) for naming rules.' },
+      { pattern: /\b(low[\s-]?fat|lo[\s-]?fat)\b/i, term: 'Low Fat', msg: `Your product name "${productName}" contains "low fat." This is a regulated claim requiring 3g or less of fat per serving. You can't put it in the name unless the product qualifies.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90). Also see Section 4: Name of Food (p. 7–13).' },
+      { pattern: /\b(sugar[\s-]?free|zero sugar)\b/i, term: 'Sugar Free', msg: `Your product name "${productName}" contains "sugar free." This requires less than 0.5g sugars per serving. If the product doesn't meet this threshold, the name itself is a violation.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90).' },
+      { pattern: /\b(healthy|heart[\s-]?healthy)\b/i, term: 'Healthy', msg: `Your product name "${productName}" uses the word "healthy." The FDA regulates this term. NOTE: The FDA adopted a NEW definition of "healthy" in 2024 (compliance date Feb 25, 2028). The NEW definition requires: the food contains a meaningful amount from at least one food group (fruit, vegetables, grains, dairy, protein) per Dietary Guidelines, AND meets limits for Added Sugars (≤2.5g per RACC), Saturated Fat (≤1g per RACC for most foods), and Sodium (≤230mg per RACC). The OLD definition (still valid until Feb 2028) required fat ≤3g, saturated fat ≤1g, sodium ≤480mg, cholesterol ≤60mg, plus 10% DV of a beneficial nutrient. Make sure your product qualifies under at least the old rules, preferably the new ones.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) for old definition. New 2024 Final Rule on "Healthy" claim definition; compliance date Feb 25, 2028. See FDA Federal Register notice for the new rule.' },
+      { pattern: /\b(natural|all[\s-]?natural)\b/i, term: 'Natural', msg: `Your product name "${productName}" uses the word "natural." While the FDA hasn't formally defined this term, it generally means no artificial ingredients, no added colors, and minimal processing. If the original product has artificial ingredients or dyes, using "natural" in the name is misleading.`, ref: 'FDA Guide Section 8: Claims (p. 72–86) — The FDA has not established a formal definition for "natural" but can take action if the term is misleading.' },
+      { pattern: /\b(lite|light)\b/i, term: 'Light/Lite', msg: `Your product name "${productName}" uses "light" or "lite." In a nutritional context, this means 1/3 fewer calories or 50% less fat than the regular version. If it seems to reference nutrition rather than color or texture, FDA rules apply.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90).' },
+      { pattern: /\b(low[\s-]?cal|low[\s-]?calorie)\b/i, term: 'Low Calorie', msg: `Your product name "${productName}" contains "low calorie," which requires 40 calories or fewer per serving.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90).' },
+      { pattern: /\b(high[\s-]?protein|protein[\s-]?packed)\b/i, term: 'High Protein', msg: `Your product name "${productName}" uses a protein claim. "High protein" requires 20%+ of the Daily Value (10g+ per serving).`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90).' },
+      { pattern: /\b(high[\s-]?fiber|fiber[\s-]?rich)\b/i, term: 'High Fiber', msg: `Your product name "${productName}" uses a fiber claim. "High fiber" requires 20%+ of the Daily Value (about 5.6g+ per serving).`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90).' },
+      { pattern: /\b(gluten[\s-]?free)\b/i, term: 'Gluten Free', msg: `Your product name "${productName}" includes "gluten free." This is FDA-regulated and requires less than 20 ppm of gluten. If the original product contains wheat, barley, or rye, you likely can't use this.`, ref: 'FDA Guide Section 6: Food Allergen Labeling (p. 17–24) and the FDA gluten-free labeling rule (21 CFR 101.91).' },
+      { pattern: /\b(superfood|super[\s-]?food)\b/i, term: 'Superfood', msg: `Your product name "${productName}" uses "superfood." This isn't formally regulated by the FDA, but it could be considered misleading if the product doesn't deliver exceptional nutritional value.`, ref: 'FDA Guide Section 3: General Food Labeling Requirements (p. 5–6) — Labels must not be misleading.' },
+      { pattern: /\b(detox|cleanse|slim|slimming)\b/i, term: 'Detox/Slim', msg: `Your product name "${productName}" contains therapeutic or weight-loss language. Terms like "detox," "cleanse," or "slim" strongly imply medical/drug effects and could push the product into drug claim territory.`, ref: 'FDA Guide Section 8: Claims (p. 72–86) — See the distinction between food claims and drug claims.' },
+      { pattern: /\b(immune|immunity|probiotic)\b/i, term: 'Immune/Probiotic', msg: `Your product name "${productName}" references immune health or probiotics. These terms can trigger structure/function claim rules. Make sure the product actually contains relevant nutrients and that you're not implying it treats or prevents disease.`, ref: 'FDA Guide Section 8: Structure/Function Claims (p. 84–86) — Covers body-function claims and required disclaimers.' },
+      { pattern: /\b(zero[\s-]?trans[\s-]?fat|no[\s-]?trans[\s-]?fat)\b/i, term: '0 Trans Fat', msg: `Your product name "${productName}" includes a trans fat claim. The product must have less than 0.5g trans fat per serving to use this term.`, ref: 'FDA Guide Section 7: Trans Fat Labeling (p. 25–71) and Appendix H: Rounding Rules (p. 129–132).' },
+      { pattern: /\b(fresh\s+frozen|frozen\s+fresh|quickly\s+frozen)\b/i, term: 'Fresh Frozen', msg: `Your product name "${productName}" includes "fresh frozen" or similar term. "Fresh frozen" means the product was frozen while still fresh (not thawed and refrozen). This is allowed and specific under 21 CFR 101.95(b), but you must be able to document it.`, ref: 'FDA Guide Section 8: Claims (p. 72–86) and 21 CFR 101.95(b) — "Fresh frozen" is a specific type of claim for products frozen while fresh.' },
+      { pattern: /\b(?<!\w)fresh(?!\s+frozen)(?!\s+(?:made|baked|brewed))\b/i, term: 'Fresh', msg: `Your product name "${productName}" includes the word "fresh." Under 21 CFR 101.95, "fresh" means raw or minimally processed (no thermal processing beyond what's allowed: approved waxes, pesticides, mild wash, or irradiation ≤1 kGy). If your product is processed, baked, cooked, or pasteurized, you likely cannot use "fresh" in the name.`, ref: 'FDA Guide Section 8: Claims (p. 72–86) and 21 CFR 101.95 — "Fresh" has very specific requirements for minimally processed foods.' },
+      { pattern: /\b(good\s+source|contains|provides)\b/i, term: 'Good Source/Contains/Provides', msg: `Your product name "${productName}" includes a nutrient content claim term ("good source," "contains," "provides"). These require 10–19% of the Daily Value per RACC. You must verify the nutrition data supports this.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) — "Good source" requires 10–19% DV per RACC per 21 CFR 101.54(e).' },
+      { pattern: /\b(high|rich\s+in|excellent\s+source)\b/i, term: 'High/Rich In/Excellent Source', msg: `Your product name "${productName}" includes a claim term ("high," "rich in," "excellent source"). These require ≥20% of the Daily Value per RACC. Verify your nutrition facts support this claim.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) — These terms require ≥20% DV per RACC per 21 CFR 101.54(b).' },
+      { pattern: /\b(more|fortified|enriched|added|extra|plus)\b/i, term: 'More/Fortified/Enriched/Added/Extra', msg: `Your product name "${productName}" includes a relative claim term ("more," "fortified," "enriched," "added," "extra," "plus"). These are comparison claims requiring ≥10% more of the nutrient than the reference food. You must name the reference food on the label.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — Relative claims require ≥10% more DV than reference food per 21 CFR 101.54(e).' },
+      { pattern: /\b(reduced|less|fewer|lower)\b/i, term: 'Reduced/Less/Fewer/Lower', msg: `Your product name "${productName}" includes a comparative claim ("reduced," "less," "fewer," "lower"). These require ≥25% less than the reference food. You must identify the reference food on the label and show the comparison.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — Reduced claims require ≥25% less than reference food per 21 CFR 101.54(e).' },
+      { pattern: /\b(no\s+added\s+sugar|without\s+added\s+sugar)\b/i, term: 'No Added Sugar', msg: `Your product name "${productName}" includes "no added sugar" or "without added sugar." This requires that no sugar-containing ingredient was added during processing (21 CFR 101.60(c)). If the food is not naturally low in calories or reduced in calories, you must disclose this (e.g., "Not a low calorie food").`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — "No added sugar" regulations per 21 CFR 101.60(c).' },
+      { pattern: /\blean\b/i, term: 'Lean', msg: `Your product name "${productName}" uses "lean." This term is ONLY for meat and seafood products. For meat/seafood to qualify as "lean," it must have: <10g fat, <4.5g saturated fat, and <95mg cholesterol per RACC (21 CFR 101.62(e)). If this is not a meat/seafood product, you cannot use "lean."`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) — "Lean" for meat/seafood per 21 CFR 101.62(e).' },
+      { pattern: /\bextra\s+lean\b/i, term: 'Extra Lean', msg: `Your product name "${productName}" uses "extra lean." This term is ONLY for meat and seafood products. For meat/seafood to qualify as "extra lean," it must have: <5g fat, <2g saturated fat, and <95mg cholesterol per RACC (21 CFR 101.62(e)). If this is not a meat/seafood product, you cannot use this claim.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) — "Extra lean" for meat/seafood per 21 CFR 101.62(e).' },
+      { pattern: /\bvery\s+low\s+sodium\b/i, term: 'Very Low Sodium', msg: `Your product name "${productName}" includes "very low sodium." This requires ≤35mg sodium per RACC. Verify your nutrition data supports this claim.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) — "Very low sodium" requires ≤35mg sodium per RACC.' },
+      { pattern: /\b(salt\s+free|no\s+salt|sodium\s+free)\b/i, term: 'Salt Free/No Salt', msg: `Your product name "${productName}" uses "salt free," "no salt," or "sodium free." These terms require <5mg sodium per RACC. If the product is not sodium free but you claim "no salt," it must state "This is Not a Sodium Free Food."`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) — Sodium-free and salt-free claims require <5mg sodium.' },
+      { pattern: /\blightly\s+salted\b/i, term: 'Lightly Salted', msg: `Your product name "${productName}" includes "lightly salted." This requires 50% less sodium than the reference food. You must name the reference food on the label.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — Relative sodium claims require 50% reduction compared to reference food.' },
+      { pattern: /\b(unsalted|no\s+salt\s+added)\b/i, term: 'Unsalted/No Salt Added', msg: `Your product name "${productName}" uses "unsalted" or "no salt added." This means no salt was added during processing. If the product is not sodium free, you MUST state "This Is Not a Sodium Free Food" on the label immediately adjacent to or in proximity to this claim.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — "No salt added" requires a sodium-free disclosure if applicable.' },
+      { pattern: /\bantioxidant\b/i, term: 'Antioxidant', msg: `Your product name "${productName}" includes "antioxidant." When using this term, you must name the specific nutrient(s) (e.g., "antioxidant vitamin C"). Each named nutrient must meet the definition of "high" or "good source" AND have scientific evidence supporting its antioxidant activity.`, ref: 'FDA Guide Section 8: Claims (p. 72–86) — Antioxidant claims must identify the specific nutrient and have scientific support.' },
+      { pattern: /\bhigh\s+potency\b/i, term: 'High Potency', msg: `Your product name "${productName}" uses "high potency." For vitamins and minerals, this requires that each vitamin or mineral in the product provides ≥100% of the RDI per RACC. You must identify which vitamins/minerals qualify.`, ref: 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and 21 CFR 101.36(c) — "High potency" requires ≥100% RDI for vitamins/minerals.' },
+    ];
+
+    nameRegTerms.forEach(item => {
+      if (item.pattern.test(productName)) {
+        // Cross-reference with nutrition data for severity
+        let sev = 'warn';
+        const tl = item.term.toLowerCase();
+        if (tl === 'organic' || tl === 'detox/slim') sev = 'fail';
+        if (tl === 'fat free' && fat !== null && fat >= 0.5) sev = 'fail';
+        if (tl === 'low fat' && fat !== null && fat > 3) sev = 'fail';
+        if (tl === 'sugar free' && sugar !== null && sugar >= 0.5) sev = 'fail';
+        if (tl === 'healthy' && fat !== null && fat > 3) sev = 'fail';
+        if (tl === 'healthy' && sodium !== null && sodium > 480) sev = 'fail';
+        if (tl === 'low calorie' && cal !== null && cal > 40) sev = 'fail';
+        add(sev, `Product Name — Regulated Term: "${item.term}"`, item.msg, item.ref);
+        nameIssues++;
+      }
+    });
+
+    // Check for juice naming rules
+    if (/\bjuice\b/i.test(productName)) {
+      const isQualified = /\b(drink|beverage|cocktail|punch|blend)\b/i.test(productName);
+      if (!isQualified) {
+        add('info', 'Product Name — Juice Naming Requirements', `Your product name "${productName}" contains "juice" but is not qualified with "drink," "beverage," or "cocktail." If the product is NOT 100% juice, you MUST use a qualifying term in the product name. Additionally, the information panel must clearly state the percentage of juice content (e.g., "Contains 25% Juice" or "10% Real Juice"). If it IS 100% juice, the name is fine as is.`, 'FDA Guide Section 4: Juices (J1-J5, p. 8–9) — Juice naming and labeling rules. Also see 21 CFR 101.30 and 21 CFR 102.33 — Federal standards of identity for juice products.');
+        nameIssues++;
+      }
+    }
+
+    if (nameIssues === 0) {
+      add('pass', 'Product Name Looks Good', `"${productName}" doesn't contain obvious drug or disease claims or regulated marketing terms. Nice!`, 'FDA Guide Section 4: Name of Food (p. 7–13) — Full rules on product naming.');
+    }
+  }
+
+  if (!commonName) {
+    add('warn', 'Missing Common Name', 'The FDA requires a "common or usual name" — a simple description of what the food actually is (e.g., "chocolate chip cookies"). Without this, your label is incomplete.', 'FDA Guide Section 4: Name of Food (p. 7–13) — Covers the "statement of identity" requirement and what counts as a common or usual name.');
+  } else {
+    add('pass', 'Common Name Provided', `"${commonName}" — good. The FDA requires this so consumers know what they\'re actually buying.`, 'FDA Guide Section 4: Name of Food (p. 7–13)');
+  }
+
+  // --- NUTRIENT CONTENT CLAIM CHECKS ---
+  const NCC_REF = 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) — Defines what terms like "free," "low," "reduced," and "high" legally mean. Also see Appendix A: Definitions of Nutrient Content Claims (p. 87–90) for the complete threshold table.';
+  const NCC_REF_PLUS_B = 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix A (p. 87–90) for exact thresholds. Also see Appendix B: Additional Requirements (p. 91–94) for extra conditions that apply to certain claims.';
+
+  if (claims.includes('fat-free')) {
+    if (fat !== null && fat >= 0.5) {
+      add('fail', '"Fat Free" Claim — VIOLATION', `Your product has ${fat}g of fat per serving. To say "Fat Free," it must have less than 0.5g fat per serving. This claim is not allowed.`, NCC_REF);
+    } else if (fat !== null) {
+      add('pass', '"Fat Free" Claim — Allowed', `With ${fat}g fat per serving (under 0.5g), your product qualifies as "Fat Free."`, NCC_REF);
+    } else {
+      add('warn', '"Fat Free" — Need Nutrition Data', 'Enter your total fat (g) so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  if (claims.includes('low-fat')) {
+    if (fat !== null && fat > 3) {
+      add('fail', '"Low Fat" Claim — VIOLATION', `Your product has ${fat}g of fat per serving. "Low Fat" requires 3g or less. This claim is not allowed.`, NCC_REF);
+    } else if (fat !== null) {
+      add('pass', '"Low Fat" Claim — Allowed', `With ${fat}g fat per serving (3g or less), your product qualifies as "Low Fat."`, NCC_REF);
+    } else {
+      add('warn', '"Low Fat" — Need Nutrition Data', 'Enter your total fat (g) so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  if (claims.includes('reduced-fat')) {
+    add('info', '"Reduced Fat" — Compare to Original', '"Reduced Fat" means at least 25% less fat than the regular version of the product. You\'ll need to show a comparison on the label (e.g., "Reduced Fat — 50% less fat than our regular cookies"). Make sure you can document this comparison!', NCC_REF_PLUS_B);
+  }
+
+  if (claims.includes('sugar-free')) {
+    if (sugar !== null && sugar >= 0.5) {
+      add('fail', '"Sugar Free" Claim — VIOLATION', `Your product has ${sugar}g of sugar per serving. "Sugar Free" requires less than 0.5g sugars. This claim is not allowed.`, NCC_REF);
+    } else if (sugar !== null) {
+      add('pass', '"Sugar Free" Claim — Allowed', `With ${sugar}g sugar per serving (under 0.5g), your product qualifies as "Sugar Free."`, NCC_REF);
+    } else {
+      add('warn', '"Sugar Free" — Need Nutrition Data', 'Enter total sugars so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  if (claims.includes('no-added-sugar')) {
+    if (addedsugar !== null && addedsugar > 0) {
+      add('fail', '"No Added Sugars" Claim — VIOLATION', `Your product has ${addedsugar}g of added sugars. "No Added Sugars" means zero sugar or sugar-containing ingredients can be added during processing. If the original product has added sugars, you can't use this claim.`, NCC_REF_PLUS_B);
+    } else if (addedsugar !== null) {
+      add('pass', '"No Added Sugars" — Looks Okay', 'You show 0g added sugars. Just make sure no sugar-containing ingredient (honey, syrup, juice concentrates, etc.) was added during processing.', NCC_REF_PLUS_B);
+    } else {
+      add('warn', '"No Added Sugars" — Need Data', 'Enter added sugars info so we can verify this claim.', NCC_REF_PLUS_B);
+    }
+  }
+
+  if (claims.includes('low-calorie')) {
+    if (cal !== null && cal > 40) {
+      add('fail', '"Low Calorie" Claim — VIOLATION', `Your product has ${cal} calories per serving. "Low Calorie" requires 40 calories or fewer. This claim is not allowed.`, NCC_REF);
+    } else if (cal !== null) {
+      add('pass', '"Low Calorie" Claim — Allowed', `With ${cal} calories per serving (40 or fewer), your product qualifies as "Low Calorie."`, NCC_REF);
+    } else {
+      add('warn', '"Low Calorie" — Need Data', 'Enter calories so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  if (claims.includes('light')) {
+    add('info', '"Light / Lite" — Compare to Original', '"Light" means the product has 1/3 fewer calories OR 50% less fat than the reference product. You need to be able to prove this comparison. The label must specify what is "lighter" (e.g., "Light — 50% less fat than regular ranch dressing"). Note: "Light" can also describe color or texture (like "light brown sugar"), but if it seems to reference nutrition, FDA rules apply.', NCC_REF_PLUS_B);
+  }
+
+  if (claims.includes('low-sodium')) {
+    if (sodium !== null && sodium > 140) {
+      add('fail', '"Low Sodium" Claim — VIOLATION', `Your product has ${sodium}mg sodium per serving. "Low Sodium" requires 140mg or less. This claim is not allowed.`, NCC_REF);
+    } else if (sodium !== null) {
+      add('pass', '"Low Sodium" Claim — Allowed', `With ${sodium}mg sodium per serving (140mg or less), your product qualifies as "Low Sodium."`, NCC_REF);
+    } else {
+      add('warn', '"Low Sodium" — Need Data', 'Enter sodium (mg) so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  if (claims.includes('good-source-fiber')) {
+    // DV for fiber is 28g. 10-19% = 2.8g to 5.32g
+    if (fiber !== null) {
+      const pctDV = (fiber / 28) * 100;
+      if (pctDV >= 10 && pctDV < 20) {
+        add('pass', '"Good Source of Fiber" — Allowed', `With ${fiber}g fiber per serving (${pctDV.toFixed(0)}% DV), your product qualifies as a "Good Source" (10–19% DV).`, NCC_REF);
+      } else if (pctDV >= 20) {
+        add('pass', '"Good Source of Fiber" — Even Better!', `With ${fiber}g fiber (${pctDV.toFixed(0)}% DV), your product actually qualifies as "High in Fiber" or "Excellent Source" (20%+ DV). You could upgrade the claim!`, NCC_REF);
+      } else {
+        add('fail', '"Good Source of Fiber" — VIOLATION', `Your product has ${fiber}g fiber per serving (${pctDV.toFixed(0)}% DV). "Good Source" requires 10–19% of the Daily Value (about 2.8–5.3g fiber). This claim is not allowed.`, NCC_REF);
+      }
+    } else {
+      add('warn', '"Good Source of Fiber" — Need Data', 'Enter fiber (g) so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  if (claims.includes('high-protein')) {
+    // DV for protein is 50g. 20% = 10g
+    if (protein !== null) {
+      const pctDV = (protein / 50) * 100;
+      if (pctDV >= 20) {
+        add('pass', '"High in Protein" — Allowed', `With ${protein}g protein per serving (${pctDV.toFixed(0)}% DV), your product qualifies as "High in Protein" (20%+ DV).`, NCC_REF);
+      } else if (pctDV >= 10) {
+        add('warn', '"High in Protein" — Downgrade Needed', `Your product has ${protein}g protein (${pctDV.toFixed(0)}% DV). That's a "Good Source" of protein (10–19% DV) but NOT "High." You'd need to change the claim to "Good Source of Protein."`, NCC_REF);
+      } else {
+        add('fail', '"High in Protein" — VIOLATION', `Your product has ${protein}g protein per serving (${pctDV.toFixed(0)}% DV). "High" claims require 20% or more of the Daily Value (10g+). This claim is not allowed.`, NCC_REF);
+      }
+    } else {
+      add('warn', '"High in Protein" — Need Data', 'Enter protein (g) so we can verify this claim.', NCC_REF);
+    }
+  }
+
+  const HEALTHY_REF = 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B: Additional Requirements (p. 91–94) for the OLD definition. NEW 2024 Rule on "Healthy" definition (compliance date Feb 25, 2028): product must contain a meaningful amount from one food group (fruit, vegetable, grain, dairy, or protein) AND meet limits for Added Sugars (≤2.5g), Saturated Fat (≤1g), and Sodium (≤230mg) per RACC. OLD definition (still valid until Feb 2028): Fat ≤3g, Saturated Fat ≤1g, Sodium ≤480mg, Cholesterol ≤60mg, plus 10% DV of beneficial nutrient.';
+  if (claims.includes('healthy')) {
+    let oldIssues = [];
+    let newIssues = [];
+
+    // Check OLD definition (21 CFR 101.65(d)(2)) — still valid until Feb 2028
+    if (fat !== null && fat > 3) oldIssues.push(`total fat ${fat}g exceeds 3g limit`);
+    if (satfat !== null && satfat > 1) oldIssues.push(`saturated fat ${satfat}g exceeds 1g limit`);
+    if (sodium !== null && sodium > 480) oldIssues.push(`sodium ${sodium}mg exceeds 480mg limit`);
+    if (chol !== null && chol > 60) oldIssues.push(`cholesterol ${chol}mg exceeds 60mg limit`);
+
+    // Check NEW definition (2024 Final Rule) — effective Feb 25, 2028
+    if (addedsugar !== null && addedsugar > 2.5) newIssues.push(`added sugars ${addedsugar}g exceeds 2.5g limit`);
+    if (satfat !== null && satfat > 1) newIssues.push(`saturated fat ${satfat}g exceeds 1g limit`);
+    if (sodium !== null && sodium > 230) newIssues.push(`sodium ${sodium}mg exceeds 230mg limit`);
+
+    if (oldIssues.length > 0 || newIssues.length > 0) {
+      let msg = `Your product can't be called "Healthy" because:<br/><strong>OLD Definition Issues (still valid until Feb 2028):</strong> ${oldIssues.length > 0 ? oldIssues.join('; ') : 'None'}<br/><strong>NEW Definition Issues (effective Feb 2028):</strong> ${newIssues.length > 0 ? newIssues.join('; ') + '. Plus must contain a meaningful amount from at least one food group.' : 'Must also contain a meaningful amount from a food group.'}`;
+      add('fail', '"Healthy" Claim — VIOLATION', msg, HEALTHY_REF);
+    } else if (fat !== null && satfat !== null && sodium !== null && addedsugar !== null) {
+      add('warn', '"Healthy" — Partially Verified', 'The nutrient thresholds look okay for the OLD definition, but remember: (1) the product must have at least 10% DV of a beneficial nutrient (vitamin A, C, iron, calcium, protein, or fiber); (2) for the NEW definition (effective Feb 2028), the product must also contain a meaningful amount from one food group (fruit, vegetable, grain, dairy, or protein). We can\'t fully verify without that food group information.', HEALTHY_REF);
+    } else {
+      add('warn', '"Healthy" — Need More Data', 'Enter total fat, saturated fat, sodium, cholesterol, and added sugars so we can verify the "Healthy" claim against both the old and new FDA definitions.', HEALTHY_REF);
+    }
+  }
+
+  if (claims.includes('natural')) {
+    add('warn', '"Natural" / "All Natural" — Proceed with Caution', 'The FDA has no formal, regulated definition of "natural." Generally it means no artificial ingredients or added color, and the food is only minimally processed. Because it\'s loosely defined, it\'s easy to use — but also easy to get challenged on. Ask yourself: does the original product contain any artificial colors, flavors, or preservatives? If yes, you probably shouldn\'t call it "natural."', 'FDA Guide Section 8: Claims (p. 72–86) — Briefly discusses "natural" in the context of other label claims. Note: The FDA has not established a formal regulatory definition for "natural," so this term is less clearly defined than others in the guide.');
+  }
+
+  if (claims.includes('organic')) {
+    add('info', '"Organic" — USDA Regulated', '"Organic" is regulated by the USDA (not the FDA), and requires actual certification. You can\'t just slap "organic" on a label. For your rebranding project, note that: "100% Organic" means all ingredients must be organic; "Organic" means 95%+ organic; "Made with Organic ___" means 70%+ organic. Since you\'re rebranding an existing product, it probably isn\'t certified organic — so this claim is likely off the table.', '"Organic" is NOT covered in the FDA Food Labeling Guide because it\'s regulated by the USDA under the National Organic Program. For more info, see the USDA organic labeling standards at usda.gov/organic.');
+  }
+
+  if (claims.includes('heart-healthy')) {
+    const HC_REF = 'FDA Guide Section 8: Health Claims (p. 76–82) — Explains authorized health claims that link nutrients to disease risk reduction. Also see Appendix C: Health Claims (p. 95–104) for the full list of FDA-authorized health claims and their specific requirements.';
+    add('warn', '"Heart Healthy" — Health Claim Rules Apply', 'Linking a food to heart health is a "health claim" under FDA rules. It must be based on FDA-authorized relationships (like "diets low in saturated fat and cholesterol may reduce the risk of heart disease"). The food must also meet specific nutrient thresholds. This is tricky — make sure your product is actually low in saturated fat (<1g), cholesterol (<20mg), and sodium (<480mg), and has at least 10% DV of beneficial nutrients.', HC_REF);
+    if (satfat !== null && satfat > 1) add('fail', '"Heart Healthy" — Saturated Fat Too High', `With ${satfat}g saturated fat, your product likely disqualifies from heart health claims (limit is generally 1g or less for individual foods).`, HC_REF);
+  }
+
+  if (claims.includes('immune-support')) {
+    add('info', '"Supports Immune Health" — Structure/Function Claim', 'This is a "structure/function claim" — it describes how a nutrient affects normal body function. These don\'t need FDA pre-approval, BUT you cannot say it treats or prevents any disease. The claim must be truthful and not misleading. Make sure your product actually contains a nutrient linked to immune function (like Vitamin C, Vitamin D, or Zinc). You should also include the disclaimer: "This statement has not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease."', 'FDA Guide Section 8: Structure/Function Claims (p. 84–86) — Explains how these claims work, how they differ from health claims, and what disclaimers are required.');
+  }
+
+  if (claims.includes('zero-trans-fat')) {
+    const TF_REF = 'FDA Guide Section 7: Trans Fat Labeling (p. 25–71, see trans fat subsection) and Appendix H: Rounding Rules (p. 129–132) — Explains the <0.5g rounding rule that allows products to list "0g" trans fat.';
+    if (transfat !== null) {
+      if (transfat < 0.5) {
+        add('pass', '"0g Trans Fat" — Technically Allowed', `With ${transfat}g trans fat, FDA labeling rules allow rounding down to 0g (threshold is <0.5g). This is legal, though some consider it misleading if there's any trans fat at all. It\'s a real loophole!`, TF_REF);
+      } else {
+        add('fail', '"0g Trans Fat" — VIOLATION', `Your product has ${transfat}g trans fat. You can only claim "0g Trans Fat" if the product has less than 0.5g per serving.`, TF_REF);
+      }
+    } else {
+      add('warn', '"0g Trans Fat" — Need Data', 'Enter trans fat amount so we can check this claim.', TF_REF);
+    }
+  }
+
+  if (claims.includes('whole-grain')) {
+    add('info', '"Made with Whole Grains" — Truthfulness Required', '"Made with Whole Grains" doesn\'t have a strict FDA threshold, but the claim must be truthful. If the product contains SOME whole grain ingredients, this may be okay — but check: is whole grain one of the first ingredients? If it\'s listed far down the ingredient list, the claim could be considered misleading. Tip: the Whole Grains Council (not FDA) has its own stamp program if you want extra credibility.', 'FDA Guide Section 6: Ingredient Lists (p. 17–24) — Ingredients must be listed in descending order by weight, so check where whole grains appear. Also see Section 8 (p. 72) for general claim truthfulness requirements.');
+  }
+
+  if (claims.includes('gluten-free')) {
+    add('info', '"Gluten Free" — FDA Regulated', 'The FDA does regulate "Gluten Free": the product must contain less than 20 parts per million (ppm) of gluten. If your original product contains wheat, barley, rye, or related grains, you likely can\'t use this claim unless the gluten has been removed to below 20 ppm.', 'FDA Guide Section 6: Food Allergen Labeling (p. 17–24) — Covers allergen declarations including wheat. The FDA\'s gluten-free labeling rule (21 CFR 101.91) is a separate regulation but related to the allergen section.');
+  }
+
+  // --- DISCLOSURE STATEMENT CHECK ---
+  // Check if any nutrient content claims were made and nutrition data exceeds thresholds
+  const disclosureRef = 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76), specifically N7-N10 (p. 72–73), Appendix A notes (p. 90), and 21 CFR 101.13(h) — Requires disclosure statements when making nutrient content claims if product exceeds certain thresholds.';
+  if (claims.length > 0) {
+    let exceedsThreshold = false;
+    let exceedingNutrients = [];
+
+    if (fat !== null && fat > 13) { exceedsThreshold = true; exceedingNutrients.push(`Total Fat (${fat}g > 13g)`); }
+    if (satfat !== null && satfat > 4) { exceedsThreshold = true; exceedingNutrients.push(`Saturated Fat (${satfat}g > 4g)`); }
+    if (chol !== null && chol > 60) { exceedsThreshold = true; exceedingNutrients.push(`Cholesterol (${chol}mg > 60mg)`); }
+    if (sodium !== null && sodium > 480) { exceedsThreshold = true; exceedingNutrients.push(`Sodium (${sodium}mg > 480mg)`); }
+
+    if (exceedsThreshold) {
+      const discMsg = `You've selected nutrient content claims AND your product exceeds disclosure thresholds: ${exceedingNutrients.join(', ')}. When making nutrient content claims, you must include a disclosure statement placed immediately adjacent to the claim. Example: "See nutrition information for sodium content." This alerts consumers that high levels of certain nutrients are present despite your positive claims.`;
+      add('warn', 'Disclosure Statement Required', discMsg, disclosureRef);
+    }
+  }
+
+  // --- CUSTOM COPY ANALYSIS ---
+  if (customCopy) {
+    let copyIssues = 0;
+    const copyLower = customCopy.toLowerCase();
+
+    // 1. Disease / drug claims
+    const diseasePattern = /\b(cure|cures|heal|heals|treat|treats|treatment|prevent|prevents|prevention|disease|cancer|diabetes|heart disease|stroke|alzheimer|depression|anxiety|adhd|autism|arthritis|osteoporosis|hypertension|high blood pressure|obesity|tumor|infection)\b/i;
+    const drugPattern = /\b(medicine|drug|prescription|clinical|clinically proven|clinically tested|doctor recommended|physician|FDA approved|medically proven|pharmaceutical|therapeutic|therapy|diagnosis|diagnose)\b/i;
+    const COPY_DISEASE_REF = 'FDA Guide Section 8: Claims (p. 72–86) — See especially the sections on Health Claims (p. 76) and Structure/Function Claims (p. 84) to understand where the line is between food marketing and drug claims.';
+    if (diseasePattern.test(customCopy)) {
+      add('fail', 'Marketing Copy — Disease Claims Detected!', 'Your marketing copy contains language about diseases or medical conditions. The FDA draws a firm line: if your label claims to treat, cure, or prevent a disease, the product is classified as a DRUG, not a food. Remove all disease references. Tip: You CAN describe how nutrients affect normal body function (e.g., "calcium builds strong bones") but you CANNOT mention a specific disease.', COPY_DISEASE_REF);
+      copyIssues++;
+    }
+    if (drugPattern.test(customCopy)) {
+      add('fail', 'Marketing Copy — Drug/Medical Language', 'Your copy uses medical or pharmaceutical language ("clinically proven," "doctor recommended," "FDA approved," etc.). This can make your food product look like it\'s making drug claims, which is an FDA violation. Note: saying "FDA approved" on a food label is especially problematic because the FDA does not "approve" most foods.', COPY_DISEASE_REF);
+      copyIssues++;
+    }
+
+    // 2. Regulated nutrient content terms used in free text
+    const nutrientTerms = [
+      { pattern: /\b(organic|certified organic|100% organic|usda organic)\b/i, term: 'Organic', msg: '"Organic" is a legally regulated term controlled by the USDA. You cannot use it in your marketing copy unless the product is actually USDA-certified organic. For a rebranded product like gummy bears, chips, or candy — it almost certainly isn\'t certified. Remove "organic" from your copy or get USDA certification.' },
+      { pattern: /\b(fat[\s-]?free|zero fat|no fat)\b/i, term: 'Fat Free', msg: 'Saying "fat free" in your marketing copy is a nutrient content claim. The FDA requires the product to have less than 0.5g fat per serving. If you haven\'t checked the nutrition data against this threshold, don\'t use this term in your copy.' },
+      { pattern: /\b(low[\s-]?fat|lo[\s-]?fat)\b/i, term: 'Low Fat', msg: '"Low fat" is an FDA-regulated nutrient content claim requiring 3g or less of fat per serving. Don\'t sneak it into marketing copy without verifying the product qualifies.' },
+      { pattern: /\b(sugar[\s-]?free|zero sugar|no sugar)\b/i, term: 'Sugar Free', msg: '"Sugar free" requires less than 0.5g sugars per serving. Using this term anywhere on the label — including marketing copy — triggers FDA regulations.' },
+      { pattern: /\b(low[\s-]?calorie|lo[\s-]?cal)\b/i, term: 'Low Calorie', msg: '"Low calorie" requires 40 calories or fewer per serving. This is regulated whether it appears in a formal claim or in your marketing text.' },
+      { pattern: /\b(low[\s-]?sodium|low[\s-]?salt)\b/i, term: 'Low Sodium', msg: '"Low sodium" requires 140mg or less per serving. Putting it in your marketing copy doesn\'t dodge FDA rules — it\'s still a regulated claim.' },
+      { pattern: /\b(high[\s-]?fiber|rich in fiber|excellent source of fiber)\b/i, term: 'High Fiber', msg: '"High in fiber" or "excellent source of fiber" requires 20%+ of the Daily Value (about 5.6g+ fiber per serving). This is regulated regardless of where it appears on the package.' },
+      { pattern: /\b(high[\s-]?protein|protein[\s-]?packed|loaded with protein)\b/i, term: 'High Protein', msg: 'Calling a product "high protein" or "protein packed" is a nutrient content claim requiring 20%+ of the Daily Value of protein (10g+ per serving). This applies to marketing copy too.' },
+      { pattern: /\b(natural|all[\s-]?natural|100% natural)\b/i, term: 'Natural', msg: '"Natural" has no strict FDA definition, but generally means no artificial ingredients, no added colors, and only minimal processing. If the original product contains artificial flavors, colors (like Red 40), or preservatives, calling it "natural" is misleading and could be challenged.' },
+      { pattern: /\b(healthy|heart[\s-]?healthy|wholesome)\b/i, term: 'Healthy', msg: '"Healthy" is regulated by the FDA. The product must meet limits for fat (≤3g), saturated fat (≤1g), sodium (≤480mg), and cholesterol (≤60mg) AND have at least 10% DV of a beneficial nutrient. Don\'t use "healthy" in copy unless the product actually qualifies.' },
+      { pattern: /\b(light|lite)\b/i, term: 'Light/Lite', msg: '"Light" or "Lite" in a nutritional context means 1/3 fewer calories or 50% less fat than the regular version. If this appears in your marketing copy and seems to reference nutrition (not just color/texture), the FDA considers it a regulated claim.' },
+      { pattern: /\b(no[\s-]?added[\s-]?sugar|without added sugar)\b/i, term: 'No Added Sugars', msg: '"No added sugars" means absolutely no sugar or sugar-containing ingredient (including honey, syrups, and juice concentrates) was added during processing. This is regulated anywhere on the label.' },
+      { pattern: /\b(gluten[\s-]?free|no gluten)\b/i, term: 'Gluten Free', msg: '"Gluten free" is FDA-regulated and requires the product to contain less than 20 parts per million of gluten. If the original product contains wheat, barley, or rye, you probably can\'t use this claim.' },
+      { pattern: /\b(reduced|less|fewer|lower)\b/i, term: 'Reduced/Less', msg: 'Words like "reduced," "less," "fewer," or "lower" are comparative claims under FDA rules. They require the product to have at least 25% less of a nutrient compared to a reference food — and you must name that reference food on the label.' },
+      { pattern: /\b(good source|excellent source|rich in|high in|fortified|enriched)\b/i, term: 'Nutrient Source Claims', msg: 'Terms like "good source of," "excellent source of," "rich in," or "high in" are regulated nutrient content claims. "Good source" = 10-19% DV. "High/Excellent source/Rich in" = 20%+ DV. These rules apply whether the term is in a formal claim or tucked into marketing copy.' },
+      { pattern: /\b(superfood|super[\s-]?food)\b/i, term: 'Superfood', msg: '"Superfood" is not an FDA-defined or regulated term, but using it can be considered misleading if the product doesn\'t deliver exceptional nutritional value. The FDA could challenge it as a misleading claim. Use with caution.' },
+      { pattern: /\b(zero[\s-]?trans[\s-]?fat|no[\s-]?trans[\s-]?fat|trans[\s-]?fat[\s-]?free)\b/i, term: '0 Trans Fat', msg: 'Claiming zero or no trans fat in your copy is regulated. The product must have less than 0.5g trans fat per serving to make this claim. (Fun fact: the FDA allows rounding to 0g under 0.5g — so "0g trans fat" products can still contain some trans fat!)' },
+      { pattern: /\b(non[\s-]?gmo|no[\s-]?gmo|gmo[\s-]?free)\b/i, term: 'Non-GMO', msg: '"Non-GMO" claims must be truthful and not misleading. While the FDA doesn\'t formally certify this, the USDA has a "Bioengineered" disclosure standard. Don\'t claim "Non-GMO" unless you can actually verify it — third-party certification (like the Non-GMO Project) adds credibility.' },
+      { pattern: /\b(probiotic|prebiotic)\b/i, term: 'Probiotic/Prebiotic', msg: 'Using "probiotic" or "prebiotic" on a food label is tricky. The FDA hasn\'t formally defined these terms for food. If you imply the product treats or prevents a health condition, it becomes a drug claim. Stick to structure/function language and make sure the product actually contains live beneficial cultures (for probiotics) or prebiotic fiber.' },
+      { pattern: /\b(immunity|immune[\s-]?boost|immune[\s-]?support|boosts? immunity|strengthens? immune)\b/i, term: 'Immune Claims', msg: 'Immune-related claims ("boosts immunity," "immune support") are structure/function claims. They don\'t need FDA pre-approval, but they CANNOT mention a disease. You also need the disclaimer: "This statement has not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease." And the product must actually contain a nutrient linked to immune function (Vitamin C, D, Zinc, etc.).' },
+      { pattern: /\b(detox|cleanse|cleanses|detoxify|purify|purifies|flush|flushes toxins)\b/i, term: 'Detox/Cleanse', msg: '"Detox," "cleanse," or "purify" language is very risky on food labels. These terms strongly imply a therapeutic or medical effect, which could push your product into drug claim territory. The FDA has warned companies about these terms. Avoid them.' },
+      { pattern: /\b(weight[\s-]?loss|lose weight|slim|slimming|diet aid|burns? fat|fat[\s-]?burn)\b/i, term: 'Weight Loss Claims', msg: 'Weight loss claims ("helps you lose weight," "slimming," "burns fat") on food labels are extremely risky. They can be considered drug claims if they imply the food treats obesity. Even structure/function claims about weight must be carefully worded and truthful.' },
+      { pattern: /\b(fresh\s+frozen|frozen\s+fresh|quickly\s+frozen)\b/i, term: 'Fresh Frozen', msg: '"Fresh frozen" or similar language means the product was frozen while still fresh, not thawed and refrozen. This is a specific claim under 21 CFR 101.95(b) and is allowed, but you must document it.' },
+      { pattern: /\b(?<!\w)fresh(?!\s+frozen)(?!\s+(?:made|baked|brewed))\b/i, term: 'Fresh', msg: '"Fresh" means raw or minimally processed (no thermal processing beyond approved waxes, pesticides, mild wash, or irradiation ≤1 kGy per 21 CFR 101.95). If your product is processed, baked, cooked, or pasteurized, you cannot use "fresh" in marketing copy.' },
+      { pattern: /\b(good\s+source|contains|provides)\b/i, term: 'Good Source/Contains/Provides', msg: 'When using "good source of," "contains," or "provides" in marketing copy, the product must have 10–19% of the Daily Value per RACC (21 CFR 101.54(e)). Make sure your nutrition facts support these claims.' },
+      { pattern: /\b(?:high(?:\s+in)?|rich\s+in|excellent\s+source)\b/i, term: 'High/Rich In/Excellent Source', msg: '"High," "rich in," or "excellent source" claims require ≥20% of the Daily Value per RACC per 21 CFR 101.54(b). These apply whether in formal claims or marketing copy.' },
+      { pattern: /\b(more|fortified|enriched|added|extra|plus)\b/i, term: 'More/Fortified/Enriched/Added/Extra/Plus', msg: '"More," "fortified," "enriched," "added," "extra," or "plus" are relative claims requiring ≥10% more of the nutrient than the reference food per 21 CFR 101.54(e). You must name the reference food in your marketing or label.' },
+      { pattern: /\b(reduced|less|fewer|lower)\b/i, term: 'Reduced/Less/Fewer/Lower', msg: 'Comparative claims like "reduced," "less," "fewer," or "lower" require ≥25% less than the reference food. You must identify the reference food and show the comparison, including nutrient amounts in both products.' },
+      { pattern: /\b(very\s+low\s+sodium)\b/i, term: 'Very Low Sodium', msg: '"Very low sodium" claims require ≤35mg sodium per RACC. Verify your nutrition facts support this term.' },
+      { pattern: /\b(salt\s+free|no\s+salt|sodium\s+free)\b/i, term: 'Salt/Sodium Free', msg: '"Salt free," "no salt," or "sodium free" require <5mg sodium per RACC. If claiming "no salt" but the product is not sodium free, you must disclose "This Is Not a Sodium Free Food."' },
+      { pattern: /\blightly\s+salted\b/i, term: 'Lightly Salted', msg: '"Lightly salted" requires 50% less sodium than the reference food. You must name the reference product.' },
+      { pattern: /\b(unsalted|no\s+salt\s+added)\b/i, term: 'Unsalted/No Salt Added', msg: '"Unsalted" or "no salt added" means no salt was added during processing. If the product is not sodium free, you MUST include a disclosure statement: "This Is Not a Sodium Free Food."' },
+      { pattern: /\bantioxidant\b/i, term: 'Antioxidant', msg: '"Antioxidant" claims must identify the specific nutrient (e.g., "antioxidant vitamin C"). That nutrient must meet the definition of "high" or "good source" and have scientific evidence of antioxidant activity.' },
+      { pattern: /\bhigh\s+potency\b/i, term: 'High Potency', msg: '"High potency" requires that each vitamin or mineral in the product provides ≥100% of the RDI per RACC per 21 CFR 101.36(c). You must identify which nutrients qualify.' },
+      { pattern: /\b(made\s+with\s+(?:real\s+)?(\w+)|contains\s+(\w+))\b/i, term: 'Implied Nutrient Claims', msg: 'Terms like "made with [ingredient]" or "contains [ingredient]" can be implied nutrient content claims if the ingredient is known to be rich in a nutrient. The FDA may treat these as claims and require substantiation. Be careful with "made with real fruit," "made with whole grains," etc.' },
+      { pattern: /\b100%\s+(\w+)\b/i, term: '100% Ingredient Claims', msg: '"100% [ingredient]" claims may imply nutrient content and could be subject to substantiation requirements. For example, "100% whole grain" could trigger claims rules.' },
+    ];
+
+    nutrientTerms.forEach(item => {
+      if (item.pattern.test(customCopy)) {
+        // Decide severity based on nutrition data
+        let severity = 'warn';
+        const termLower = item.term.toLowerCase();
+
+        // Auto-fail organic for rebranded products
+        if (termLower === 'organic') severity = 'fail';
+        // Auto-fail detox/cleanse
+        if (termLower === 'detox/cleanse') severity = 'fail';
+
+        // Cross-reference with nutrition data where possible
+        if (termLower === 'fat free' && fat !== null && fat >= 0.5) severity = 'fail';
+        if (termLower === 'low fat' && fat !== null && fat > 3) severity = 'fail';
+        if (termLower === 'sugar free' && sugar !== null && sugar >= 0.5) severity = 'fail';
+        if (termLower === 'low calorie' && cal !== null && cal > 40) severity = 'fail';
+        if (termLower === 'low sodium' && sodium !== null && sodium > 140) severity = 'fail';
+        if (termLower === 'healthy' && fat !== null && fat > 3) severity = 'fail';
+        if (termLower === 'healthy' && satfat !== null && satfat > 1) severity = 'fail';
+        if (termLower === 'healthy' && sodium !== null && sodium > 480) severity = 'fail';
+        if (termLower === 'no added sugars' && addedsugar !== null && addedsugar > 0) severity = 'fail';
+
+        const prefix = severity === 'fail' ? 'Marketing Copy — VIOLATION:' : 'Marketing Copy — Regulated Term:';
+        // Pick the right guide reference based on term type
+        let copyRef = NCC_REF;
+        if (termLower === 'organic') copyRef = '"Organic" is regulated by the USDA, not the FDA. See the USDA National Organic Program for details. This term is not covered in the FDA Food Labeling Guide.';
+        else if (termLower === 'detox/cleanse' || termLower === 'weight loss claims') copyRef = COPY_DISEASE_REF;
+        else if (termLower === 'immune claims') copyRef = 'FDA Guide Section 8: Structure/Function Claims (p. 84–86) — Covers immune and other body-function claims and required disclaimers.';
+        else if (termLower === 'healthy') copyRef = HEALTHY_REF;
+        add(severity, `${prefix} "${item.term}"`, item.msg, copyRef);
+        copyIssues++;
+      }
+    });
+
+    // 3. Absolute/misleading language
+    const absolutePattern = /\b(guarantee|guaranteed|always works|never fail|100% effective|miracle|magic|magical|wonder|revolutionary)\b/i;
+    if (absolutePattern.test(customCopy)) {
+      add('warn', 'Marketing Copy — Extreme/Absolute Language', 'Words like "guarantee," "miracle," "magic," or "100% effective" can get your label in trouble. The FDA requires that all claims be truthful and not misleading. These kinds of absolute promises are red flags. Tone them down.', 'FDA Guide Section 3: General Food Labeling Requirements (p. 5–6) — All label statements must be truthful and not misleading under 21 CFR 101. Also see Section 8 (p. 72) for claim-specific rules.');
+      copyIssues++;
+    }
+
+    // 4. Relative/Comparative claims without proper substantiation
+    const relativeClaimsPattern = /\b(reduced|less|fewer|lower|more|added|extra|plus|light|lite|fortified|enriched)\b/i;
+    if (relativeClaimsPattern.test(customCopy)) {
+      add('warn', 'Marketing Copy — Relative Claims Detected', 'Your marketing copy uses relative/comparative language ("reduced," "less," "more," "added," "light," "fortified," etc.). These claims require: (1) Identifying the reference food, (2) Stating the percentage or fraction of change, and (3) Declaring nutrient amounts in BOTH the product AND the reference food. Make sure your label includes all this information.', 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — Relative claims detail. Also see 21 CFR 101.54.');
+      copyIssues++;
+    }
+
+    // 4b. Unsubstantiated superlative comparisons
+    const comparisonNoRef = /\b(better than|superior to|the best|#1|number one|more nutritious than|healthier than)\b/i;
+    if (comparisonNoRef.test(customCopy)) {
+      add('warn', 'Marketing Copy — Comparison Claims', 'If you say your product is "better than," "the best," or "healthier than" something else, you need evidence to back it up AND you need to name the reference product. Unsubstantiated comparative claims violate FDA and FTC guidelines.', 'FDA Guide Section 8: Nutrient Content Claims (p. 72–76) and Appendix B (p. 91–94) — Comparative claims like "reduced" and "less" require a named reference food and at least a 25% difference.');
+      copyIssues++;
+    }
+
+    // 5. Vague "wellness" buzzwords that aren't violations but deserve a heads-up
+    const buzzPattern = /\b(clean eating|clean label|guilt[\s-]?free|skinny|smart choice|power[\s-]?food|brain food|beauty food|anti[\s-]?aging)\b/i;
+    if (buzzPattern.test(customCopy)) {
+      add('info', 'Marketing Copy — Trendy Buzzwords Detected', 'Your copy uses trendy wellness buzzwords ("clean," "guilt-free," "skinny," "anti-aging," etc.). These aren\'t strictly regulated by the FDA, but they could be considered misleading depending on context. "Anti-aging" in particular could be seen as a drug claim. Use these terms carefully and make sure they don\'t imply health benefits the product can\'t deliver.', 'FDA Guide Section 8: Claims (p. 72–86) — While these buzzwords aren\'t specifically defined, the FDA\'s general requirement that labels not be misleading still applies (21 CFR 101).');
+      copyIssues++;
+    }
+
+    // 6. Structure/function-style claims in copy
+    const structFuncPattern = /\b(builds? strong|supports? (healthy|strong|bone|muscle|brain|gut|digestive|joint|skin|hair|nail|energy|sleep|mood|focus|memory|vision|heart))|maintains? (healthy|strong)|promotes? (healthy|strong|bone|muscle|brain|gut|digestive)\b/i;
+    if (structFuncPattern.test(customCopy)) {
+      add('info', 'Marketing Copy — Structure/Function Language', 'Your copy contains structure/function claim language (e.g., "supports healthy digestion," "builds strong bones"). These are allowed WITHOUT FDA pre-approval, but they must be truthful, the product must actually contain the nutrient responsible, and you MUST include the disclaimer: "This statement has not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease." Also, make sure you\'re not crossing into disease claim territory.', 'FDA Guide Section 8: Structure/Function Claims (p. 84–86) — Explains how these differ from health claims, what disclaimers are needed, and how not to accidentally cross into drug claim territory.');
+      copyIssues++;
+    }
+
+    // 7. Implied nutrient content claims
+    const impliedClaimsPattern = /\b(made\s+with\s+(?:real\s+)?fruit|contains\s+whole\s+grains|made\s+with\s+whole\s+grains|100%\s+(?:whole\s+)?grain)\b/i;
+    if (impliedClaimsPattern.test(customCopy)) {
+      add('info', 'Marketing Copy — Implied Nutrient Content Claims', 'Your marketing copy contains phrases like "made with real fruit," "contains whole grains," or "100% grain" that may be interpreted as implied nutrient content claims under 21 CFR 101.65. Even if not explicitly calling a product "high in" fiber or vitamins, claims about specific ingredients can trigger FDA claim rules if those ingredients are known to be rich in nutrients. Make sure the product actually contains meaningful amounts of those nutrients and can substantiate the claim.', 'FDA Guide Section 8: Claims (p. 72–86), specifically on implied claims. Also 21 CFR 101.65 — Implied nutrient content claims must be substantiated.');
+      copyIssues++;
+    }
+
+    if (copyIssues === 0) {
+      add('pass', 'Marketing Copy — Looks Clean', 'Your front-of-package marketing copy doesn\'t contain obvious regulated terms or FDA violations. Nice work using persuasive language without crossing legal lines!', 'FDA Guide Section 8: Claims (p. 72–86) — For a full overview of what the FDA considers a "claim" on food labels.');
+    }
+  }
+
+  // --- RENDER RESULTS ---
+  const container = document.getElementById('checker-results');
+  const total = passCount + warnCount + failCount;
+  let scoreClass = 'great';
+  let scoreMsg = 'Your label looks strong!';
+  if (failCount > 0) { scoreClass = 'needs-work'; scoreMsg = 'Some claims violate FDA rules — fix these before "launching."'; }
+  else if (warnCount > 1) { scoreClass = 'okay'; scoreMsg = 'Almost there! A few things need attention.'; }
+
+  let html = '';
+  if (total > 0) {
+    html += `<div class="score-banner ${scoreClass}">
+      <span class="score-num">${passCount}✅ ${warnCount}⚠️ ${failCount}❌</span>
+      ${scoreMsg}
+    </div>`;
+  }
+
+  results.forEach(r => {
+    let refHtml = '';
+    if (r.guideRef) {
+      refHtml = `<div class="guide-ref">📖 <strong>Learn More:</strong> ${r.guideRef}</div>`;
+    }
+    html += `<div class="result-card ${r.type}"><h3>${r.type === 'pass' ? '✅' : r.type === 'warn' ? '⚠️' : r.type === 'fail' ? '❌' : 'ℹ️'} ${r.title}</h3><p>${r.body}</p>${refHtml}</div>`;
+  });
+
+  if (results.length === 0) {
+    html = '<div class="result-card info"><h3>ℹ️ Nothing to Check Yet</h3><p>Select some claims and enter your nutrition data, then hit "Check My Label" again!</p></div>';
+  }
+
+  container.innerHTML = html;
+  container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+</script>
+
+</body>
+</html>
